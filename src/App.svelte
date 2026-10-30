@@ -14,6 +14,7 @@
   import Overview from './pages/Overview.svelte';
   import Logs from './pages/Logs.svelte';
   import Tunnels from './pages/Tunnels.svelte';
+  import Processes from './pages/Processes.svelte';
   import { browser } from './features/workspace/browser.svelte';
   import FavoritesView from './features/workspace/FavoritesView.svelte';
   import FilesView from './features/workspace/FilesView.svelte';
@@ -173,6 +174,8 @@
     <Logs />
   {:else if router.current === 'tunnels'}
     <Tunnels />
+  {:else if router.current === 'processes'}
+    <Processes />
   {:else if router.current === 'workspace-files'}
     <FilesView />
   {:else if router.current === 'workspace-favorites'}

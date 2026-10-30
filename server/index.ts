@@ -165,6 +165,7 @@ function runtimeRouteAllowed(path: string, method: string): boolean {
     "/api/dashboard": ["GET"],
     "/api/events": ["GET"],
     "/api/tunnels": ["GET", "POST"],
+    "/api/processes": ["GET"],
     "/api/tunnels/status": ["GET"],
     "/api/tunnels/events": ["GET"],
     "/api/terminals": ["GET", "POST"],
@@ -194,6 +195,7 @@ function runtimeRouteAllowed(path: string, method: string): boolean {
   };
   if (exact[path]?.includes(method)) return true;
   if (new RegExp("^/api/terminals/[^/]+$").test(path)) return method === "DELETE";
+  if (new RegExp("^/api/processes/[^/]+$").test(path)) return method === "DELETE";
   if (new RegExp("^/api/tunnels/[^/]+$").test(path)) return method === "GET";
   if (new RegExp("^/api/tunnels/[^/]+/logs$").test(path)) return method === "GET";
   if (new RegExp("^/api/tunnels/[^/]+/stop$").test(path)) return method === "POST" || method === "DELETE";

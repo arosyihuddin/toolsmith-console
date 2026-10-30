@@ -62,6 +62,19 @@ export const tunnelsApi = {
   stop: async (id: string) => normalizeTunnelInfo((await postJson<{ tunnel: RuntimeTunnel }>('/api/tunnels/' + enc(id) + '/stop')).tunnel),
 };
 
+
+export type ManagedProcessStatus = 'running' | 'stopping' | 'stopped' | 'exited' | 'failed';
+export interface ManagedProcess {
+  id: string; pid: number; source: 'bash' | 'eval' | 'sudo' | 'terminal' | 'tunnel';
+  kind: 'command' | 'terminal' | 'service'; label: string; cwd?: string;
+  status: ManagedProcessStatus; startedAt: string; endedAt?: string; exitCode?: number;
+  memoryRssBytes?: number; cpuPercent?: number; cpuTimeSeconds?: number; processName?: string; stoppable: boolean;
+}
+export const processesApi = {
+  list: async () => (await request<{ processes: ManagedProcess[]; scope: string }>('/api/processes')).processes ?? [],
+  stop: (id: string) => request<{ stopped: boolean }>('/api/processes/' + enc(id), { method: 'DELETE' }),
+};
+
 export const dashboardApi = {
   snapshot: () => request<DashboardSnapshot>('/api/dashboard'),
 };
