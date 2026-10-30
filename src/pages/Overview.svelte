@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { untrack } from 'svelte';
+  import { onMount, untrack } from 'svelte';
   import { StatCard, StatusDot } from '$lib/components/ui';
   import { dashboard } from '$lib/stores/dashboard.svelte';
   import { approvals } from '$features/approvals/approvals.svelte';
@@ -16,6 +16,11 @@
   const memoryTotalGiB = $derived(system.memory?.total_bytes == null ? null : system.memory.total_bytes / 1024 ** 3);
   const gpu = $derived(system.gpu?.devices?.[0]);
   let resourceHistory = $state<ResourceSample[]>([]);
+  onMount(() => {
+    const onInstanceChange = () => { resourceHistory = []; };
+    window.addEventListener('omp-control:instance-change', onInstanceChange);
+    return () => window.removeEventListener('omp-control:instance-change', onInstanceChange);
+  });
   $effect(() => {
     const sample: ResourceSample = {
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
@@ -43,7 +48,7 @@
           <h1 class="mt-1 text-2xl font-semibold tracking-tight text-fg sm:text-3xl">Overview</h1>
           <p class="mt-2 max-w-2xl text-sm leading-6 text-fg-subtle">Ringkasan kondisi server, resource host, dan approval yang membutuhkan perhatian.</p>
           <div class="mt-4 flex flex-wrap items-center gap-2 text-sm">
-            <span class="inline-flex max-w-full items-center gap-2 rounded-md border border-line bg-surface px-2.5 py-1.5 text-fg-muted"><span class="h-1.5 w-1.5 shrink-0 rounded-full" class:bg-emerald-400={dashboard.connected} class:bg-fg-faint={!dashboard.connected}></span><span class="truncate">{system.os?.hostname ?? 'OMP-MCP server'}</span></span>
+            <span class="inline-flex max-w-full items-center gap-2 rounded-md border border-line bg-surface px-2.5 py-1.5 text-fg-muted"><span class="h-1.5 w-1.5 shrink-0 rounded-full" class:bg-emerald-400={dashboard.connected} class:bg-fg-faint={!dashboard.connected}></span><span class="truncate">{system.os?.hostname ?? 'Toolsmith server'}</span></span>
             <span class="text-fg-faint">{system.os?.pretty_name ?? system.os?.platform ?? 'Host telemetry'}</span>
           </div>
         </div>

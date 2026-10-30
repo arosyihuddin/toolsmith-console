@@ -99,8 +99,8 @@
   <main class="mx-auto grid min-h-[calc(100vh-1.5rem)] w-full max-w-6xl overflow-hidden rounded-2xl border border-line bg-surface shadow-card sm:min-h-[calc(100vh-2.5rem)] lg:min-h-[calc(100vh-4rem)] lg:grid-cols-2">
     <section class="auth-brand relative hidden flex-col justify-between overflow-hidden border-r border-line bg-surface-raised p-10 lg:flex xl:p-14">
       <div class="relative z-10 flex items-center gap-3">
-        <div class="flex h-9 w-9 items-center justify-center rounded-lg border border-line bg-surface text-sm font-semibold">O</div>
-        <span class="text-sm font-semibold tracking-tight">OMP Control</span>
+        <div class="flex h-9 w-9 items-center justify-center rounded-lg border border-line bg-surface text-sm font-semibold">T</div>
+        <span class="text-sm font-semibold tracking-tight">Toolsmith Console</span>
       </div>
 
       <div class="relative z-10 my-12 max-w-lg">
@@ -136,8 +136,8 @@
     <section class="flex min-w-0 items-center justify-center px-5 py-10 sm:px-10 lg:px-12 xl:px-16">
       <div class="w-full max-w-[360px]">
         <div class="mb-8 lg:hidden">
-          <div class="mb-6 flex h-10 w-10 items-center justify-center rounded-xl border border-line bg-surface-raised text-sm font-semibold shadow-card">O</div>
-          <p class="text-sm font-semibold">OMP Control</p>
+          <div class="mb-6 flex h-10 w-10 items-center justify-center rounded-xl border border-line bg-surface-raised text-sm font-semibold shadow-card">T</div>
+          <p class="text-sm font-semibold">Toolsmith Console</p>
         </div>
 
         <div class="mb-8">

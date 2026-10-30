@@ -1,80 +1,36 @@
-# OMP Control — Architecture
+# Toolsmith Console Architecture and Engineering Rules
 
-## Purpose and boundaries
+This document defines frontend and control-plane implementation constraints. Toolsmith MCP remains authoritative for tool execution and permission decisions.
 
-OMP Control is the standalone dashboard and control plane for managing multiple OMP-MCP runtime instances. It owns the browser UI, administrator authentication, instance registry, health checks, active-instance selection, and a constrained proxy to the selected runtime.
+## Runtime boundaries
 
-OMP-MCP remains the source of truth for runtime tools, exposure settings, execution permissions, custom permission rules, approvals, sessions, and host-local operations. Do not duplicate runtime-owned state in OMP Control.
+- SvelteKit pages and components render the dashboard and collect user intent.
+- src/lib/api/ owns typed requests to the Console control API and selected runtime instance.
+- The instance registry stores validated upstream URLs and credentials server-side. Browser code must never choose an arbitrary upstream URL for proxying.
+- Authentication and control APIs run on the same listener as the UI in Bun mode; Cloudflare mode routes through cloudflare/worker.ts and D1.
+- Runtime tool catalog, exposure, permission, custom-rule evaluation, and approvals remain owned by Toolsmith MCP. Do not duplicate enforcement in the UI.
 
-## High-level request flow
+## Security rules
 
-```text
-Browser
-  ├─ Svelte 5 UI (src/)
-  └─ same-origin requests
-       └─ OMP Control Bun server
-            ├─ Control API: auth + instance registry
-            └─ allowlisted runtime proxy
-                 └─ selected OMP-MCP instance
-                      ├─ MCP server and native OMP tools
-                      ├─ runtime/control APIs
-                      ├─ SSE events
-                      ├─ terminal WebSocket
-                      └─ host operations (including cloudflared)
-```
+1. Require authenticated sessions for control APIs and runtime proxy requests; preserve the public health endpoint only where intended.
+2. Validate instance base URLs and reject embedded credentials, query strings, fragments, unsafe schemes, and non-loopback HTTP in production contexts. Do not follow redirects for health checks.
+3. Store runtime credentials server-side; never return them from instance APIs or log them.
+4. Use an allowlist for proxied API paths and methods. Do not expose a general-purpose URL proxy.
+5. Treat API responses and user-provided text as untrusted. Escape rendered content and sanitize rendered Markdown/HTML.
+6. Never treat a disabled UI button as a security boundary. Enforce permissions in Toolsmith MCP.
 
-The browser must not choose an arbitrary upstream URL or receive stored instance credentials.
+## State and compatibility
 
-## Main modules
+- Keep existing browser storage keys and custom event names stable unless a deliberate migration is implemented; they are used by multiple Console components.
+- The Cloudflare D1 database identifier remains omp-control during this local rebrand. Do not rename the remote database or run remote migrations as part of source edits.
+- Existing deployment URLs and credentials must continue to work while the runtime and Console are migrated separately.
+- Do not overwrite unrelated working-tree changes, including terminal/workspace improvements and font asset changes.
 
-- `src/App.svelte`, `src/routes/`, `src/pages/`: app shell, routing, and page-level UI.
-- `src/features/`: focused UI workflows such as approvals, logs, terminal, tools, and workspace/editor.
-- `src/lib/api/`: same-origin API clients, runtime event handling, and active-instance URL helpers.
-- `src/lib/data/`: static, UI-owned metadata such as tool category labels/descriptions and filter/select options. This is not the source of truth for the runtime tool catalog or permissions.
-- `src/lib/types/`: shared TypeScript domain and API types.
-- `src/lib/stores/`: shared reactive state for dashboard data, instances, profile, theme, and UI.
-- `src/lib/styles/`: global styling and semantic design tokens.
-- `server/index.ts`: self-hosted Bun server, SQLite persistence, authentication, instance registry, request allowlisting, runtime proxy, SSE forwarding, and WebSocket proxying.
-- `docs/API_CONTRACT.md`: control-plane API contract.
+## Validation workflow
 
-## Runtime and deployment modes
+Run locally:
 
-### Self-hosted Bun
+    bun run check
+    bun run build
 
-The standalone SvelteKit/Bun server serves the UI and API from one listener. Instance registry and administrator/session data are stored in Bun SQLite at the fixed path `./data/omp-control.sqlite`.
-
-
-## State ownership
-
-| State or capability | Owner |
-| --- | --- |
-| Instance names, URLs, credentials, registry health metadata | OMP Control |
-| Administrator accounts and browser sessions | OMP Control |
-| Active instance selection | Browser preference |
-| Runtime tool catalog and native tool discovery | OMP-MCP |
-| Tool exposure and effective permission policy | OMP-MCP |
-| Custom tool rules and approval decisions | OMP-MCP |
-| Runtime logs, terminals, tunnel processes, workspace operations | OMP-MCP |
-
-Instance credentials are server-side secrets. They must not be included in registry list/detail responses, browser storage, or logs.
-
-## API and event flow
-
-- The browser calls OMP Control using same-origin routes.
-- Control-plane registry/auth routes use the `/control/v1` prefix.
-- Runtime API requests are forwarded only through explicit path-and-method allowlists.
-- The Tools UI obtains its catalog from the selected OMP-MCP instance; permission/exposure changes are sent to that runtime.
-- Long-lived runtime event streams (SSE) are forwarded without the normal short request timeout.
-- Terminal WebSocket forwarding is handled by the self-hosted server.
-
-## Security invariants
-
-1. Never expose a generic, unrestricted reverse proxy.
-2. Never trust an upstream URL supplied by a browser request; resolve it from the registered instance record.
-3. Validate instance URLs and reject embedded credentials, unsupported schemes, query strings, and fragments.
-4. Never return or log stored instance credentials.
-5. Require authentication for protected control and runtime-proxy routes; keep only documented bootstrap/health endpoints public.
-6. Keep the request method/path allowlists enforced by `server/index.ts`.
-7. Do not imply that UI-side hiding is enforcement. Runtime tool permissions must be enforced by OMP-MCP.
-
-When adding a feature, identify whether it belongs to the control plane or runtime first. If it changes runtime behavior or tool policy, implement the authoritative behavior in OMP-MCP and expose it through the runtime API. Update `docs/API_CONTRACT.md` and the README as appropriate.
+Check self-hosted and Cloudflare builds separately when changing adapters or routing. Do not run remote D1 migrations, Worker deployment, or release targets during routine tests. Review git status and diff. Commit, publish, and deploy only with explicit authorization.

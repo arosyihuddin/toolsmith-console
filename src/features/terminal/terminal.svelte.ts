@@ -45,6 +45,8 @@ export class TerminalController {
   private readonly scope: TerminalScope;
   private readonly getWorkspaceRoot: () => string;
   private currentWorkspaceRoot = '';
+  private currentInstanceId = this.readInstanceId();
+  private readonly onInstanceChange = () => { void this.handleInstanceChange(); };
   private loadGeneration = 0;
   private reconnectTimer: number | undefined;
   private heartbeatTimer: number | undefined;
@@ -55,12 +57,33 @@ export class TerminalController {
     this.scope = options.scope ?? 'general';
     this.getWorkspaceRoot = options.getWorkspaceRoot ?? (() => '');
     this.currentWorkspaceRoot = this.getWorkspaceRoot();
+    if (typeof window !== 'undefined') window.addEventListener('omp-control:instance-change', this.onInstanceChange);
+  }
+
+  private readInstanceId() {
+    try { return localStorage.getItem('omp-control-active-instance') ?? 'none'; } catch { return 'none'; }
   }
 
   private get storageKey() {
+    const instanceKey = `${storageKeys.terminalActiveId}:instance:${this.currentInstanceId}`;
     return this.scope === 'general'
-      ? storageKeys.terminalActiveId
-      : `${storageKeys.terminalActiveId}:project:${this.currentWorkspaceRoot}`;
+      ? instanceKey
+      : `${instanceKey}:project:${this.currentWorkspaceRoot}`;
+  }
+
+  private async handleInstanceChange() {
+    const nextInstanceId = this.readInstanceId();
+    if (nextInstanceId === this.currentInstanceId) return;
+    this.currentInstanceId = nextInstanceId;
+    this.loadGeneration++;
+    this.disconnect();
+    this.view?.reset();
+    this.terminals = [];
+    this.activeId = '';
+    this.error = '';
+    this.loading = true;
+    this.lastResize = '';
+    await this.init();
   }
 
   attach(view: TerminalViewHandle) {
@@ -170,6 +193,7 @@ export class TerminalController {
 
   dispose() {
     this.disconnect();
+    if (typeof window !== 'undefined') window.removeEventListener('omp-control:instance-change', this.onInstanceChange);
     this.view = null;
   }
 

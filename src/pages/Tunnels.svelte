@@ -65,38 +65,64 @@
 
   onMount(() => {
     let events: EventSource | undefined;
-    void tunnelsApi.status().then((status) => {
-      cloudflared = status;
-      if (status.available === false) {
-        tunnels = [];
-        loading = false;
-        return;
-      }
-      events = new EventSource(tunnelsApi.eventsUrl());
-      events.addEventListener('tunnels', (event) => {
-        try {
-          const data = JSON.parse((event as MessageEvent<string>).data) as { tunnels: Parameters<typeof normalizeTunnelInfo>[0][] };
-          tunnels = (data.tunnels ?? []).map(normalizeTunnelInfo);
-          loading = false;
-          error = '';
-        } catch {
-          error = 'Received an invalid tunnel update from the server.';
-        }
-      });
-      events.onerror = () => {
-        // EventSource reconnects automatically; keep the last known tunnel state visible.
-      };
-    }).catch(() => {
+    let generation = 0;
+
+    const loadInstance = async () => {
+      const current = ++generation;
+      events?.close();
+      events = undefined;
+      tunnels = [];
       cloudflared = null;
-      loading = false;
-      error = 'OMP-MCP API unavailable. Check the selected instance credential and OMP_API_TOKEN on the OMP-MCP host.';
-    }).finally(() => { checkingCloudflared = false; });
-    return () => events?.close();
+      checkingCloudflared = true;
+      loading = true;
+      error = '';
+      try {
+        const status = await tunnelsApi.status();
+        if (current !== generation) return;
+        cloudflared = status;
+        if (status.available === false) {
+          loading = false;
+          return;
+        }
+        const source = new EventSource(tunnelsApi.eventsUrl());
+        events = source;
+        source.addEventListener('tunnels', (event) => {
+          if (current !== generation || events !== source) return;
+          try {
+            const data = JSON.parse((event as MessageEvent<string>).data) as { tunnels: Parameters<typeof normalizeTunnelInfo>[0][] };
+            tunnels = (data.tunnels ?? []).map(normalizeTunnelInfo);
+            loading = false;
+            error = '';
+          } catch {
+            error = 'Received an invalid tunnel update from the server.';
+          }
+        });
+        source.onerror = () => {
+          // EventSource reconnects automatically; keep the last known tunnel state visible.
+        };
+      } catch {
+        if (current !== generation) return;
+        cloudflared = null;
+        loading = false;
+        error = 'Toolsmith API unavailable. Check the selected instance credential and TOOLSMITH_API_TOKEN (or legacy OMP_API_TOKEN) on the Toolsmith host.';
+      } finally {
+        if (current === generation) checkingCloudflared = false;
+      }
+    };
+
+    const onInstanceChange = () => { void loadInstance(); };
+    window.addEventListener('omp-control:instance-change', onInstanceChange);
+    void loadInstance();
+    return () => {
+      generation++;
+      events?.close();
+      window.removeEventListener('omp-control:instance-change', onInstanceChange);
+    };
   });
 </script>
 
 <div class="flex w-full min-w-0 flex-col gap-4">
-  <Panel title="Cloudflare Tunnel status" description="Checks whether cloudflared is installed on the selected OMP-MCP instance.">
+  <Panel title="Cloudflare Tunnel status" description="Checks whether cloudflared is installed on the selected Toolsmith instance.">
     <div class="flex flex-col gap-2 p-4 sm:flex-row sm:items-center sm:justify-between">
       <div class="flex min-w-0 items-start gap-3">
         <span class={[(checkingCloudflared ? 'bg-warning' : cloudflared?.installed ? 'bg-success' : 'bg-danger'), 'mt-1 size-2.5 shrink-0 rounded-full']}></span>
@@ -105,14 +131,14 @@
           {#if cloudflared?.version}<p class="mt-1 break-all text-xs text-fg-muted">{cloudflared.version}</p>{/if}
           {#if cloudflared?.path}<p class="mt-1 break-all font-mono text-xs text-fg-faint">{cloudflared.path}</p>{/if}
           {#if !checkingCloudflared && cloudflared === null}<p class="mt-1 text-xs text-fg-muted">Could not check the API host. Check the connection and try again.</p>{/if}
-          {#if !checkingCloudflared && cloudflared?.available === false}<p class="mt-1 text-xs text-fg-muted">{cloudflared.reason ?? "Manage tunnels separately from this Worker deployment."}</p>{:else if !checkingCloudflared && cloudflared && !cloudflared.installed}<p class="mt-1 text-xs text-fg-muted">Install cloudflared on the selected OMP-MCP host to create tunnels.</p>{/if}
+          {#if !checkingCloudflared && cloudflared?.available === false}<p class="mt-1 text-xs text-fg-muted">{cloudflared.reason ?? "Manage tunnels separately from this Worker deployment."}</p>{:else if !checkingCloudflared && cloudflared && !cloudflared.installed}<p class="mt-1 text-xs text-fg-muted">Install cloudflared on the selected Toolsmith host to create tunnels.</p>{/if}
         </div>
       </div>
       <button type="button" class="inline-flex h-8 shrink-0 items-center justify-center rounded-md border border-line px-3 text-xs font-medium text-fg-muted hover:bg-surface-hover" onclick={() => { checkingCloudflared = true; void tunnelsApi.status().then((status) => { cloudflared = status; }).catch(() => { cloudflared = null; }).finally(() => { checkingCloudflared = false; }); }}>Check again</button>
     </div>
   </Panel>
 
-  <Panel title="Create Quick Tunnel" description="Starts a Quick Tunnel on the selected OMP-MCP instance.">
+  <Panel title="Create Quick Tunnel" description="Starts a Quick Tunnel on the selected Toolsmith instance.">
     <form class="flex flex-col gap-3 p-4" onsubmit={startTunnel}>
       <label for="tunnel-port" class="text-sm font-medium text-fg">Local service port</label>
       <div class="flex flex-col gap-2 sm:flex-row">
@@ -124,7 +150,7 @@
           {#if starting}<LoaderCircle size={15} class="animate-spin" /> Starting…{:else}<Plus size={15} /> Start tunnel{/if}
         </button>
       </div>
-      <p class="text-xs text-fg-faint">Enter the port of a service running on the selected OMP-MCP host, for example 5173, 3000, or 8000. Tunnel creation is available only in self-hosted mode.</p>
+      <p class="text-xs text-fg-faint">Enter the port of a service running on the selected Toolsmith host, for example 5173, 3000, or 8000. Tunnel creation is available only in self-hosted mode.</p>
       {#if error}<p class="flex items-start gap-2 text-sm text-danger" role="alert"><AlertTriangle size={15} class="mt-0.5 shrink-0" />{error}</p>{/if}
     </form>
   </Panel>

@@ -204,6 +204,11 @@
     void tools.load();
     void loadRootConfig();
     const onInstanceChange = () => {
+      selectedName = null;
+      customRuleTarget = null;
+      rootConfig = null;
+      rootRules = [];
+      void tools.load();
       void loadRootConfig();
     };
     window.addEventListener("omp-control:instance-change", onInstanceChange);
@@ -503,7 +508,7 @@
           <div>
             <h3 class="text-sm font-medium text-fg">Whitelist sudo</h3>
             <p class="mt-1 text-sm leading-5 text-fg-subtle">
-              Whitelist root berlaku hanya untuk instance OMP-MCP yang sedang
+              Whitelist root berlaku hanya untuk instance Toolsmith yang sedang
               dipilih. Executable dan seluruh argumen harus cocok persis; shell,
               wildcard, dan command chaining ditolak. Whitelist ini tetap wajib
               dipenuhi meskipun permission tool diatur ke Selalu Izinkan.
@@ -516,7 +521,7 @@
               class="text-sm text-warning"
               role="status"
             >
-              Atur <code>OMP_SUDO_ENCRYPTION_KEY</code> di environment instance OMP-MCP
+              Atur <code>TOOLSMITH_SUDO_ENCRYPTION_KEY</code> (atau OMP_SUDO_ENCRYPTION_KEY lama) di environment instance Toolsmith
               (minimal 32 karakter), lalu restart instance agar password dapat disimpan
               terenkripsi.
             </p>{/if}

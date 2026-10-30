@@ -118,7 +118,7 @@
   }
 </script>
 
-<Modal {open} {title} description="Kondisi dievaluasi di backend OMP-MCP sebelum tool dijalankan." onclose={oncancel} width="max-w-3xl">
+<Modal {open} {title} description="Kondisi dievaluasi di backend Toolsmith sebelum tool dijalankan." onclose={oncancel} width="max-w-3xl">
   <div class="space-y-5 p-4 sm:p-5">
     <div class="flex flex-col gap-3 rounded-lg border border-line bg-surface-muted/40 p-3 sm:flex-row sm:items-center sm:justify-between">
       <div class="min-w-0">

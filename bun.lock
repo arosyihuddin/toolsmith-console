@@ -3,7 +3,7 @@
   "configVersion": 0,
   "workspaces": {
     "": {
-      "name": "dashboard",
+      "name": "toolsmith-console",
       "dependencies": {
         "@codemirror/commands": "^6.11.1",
         "@codemirror/lang-css": "^6.3.1",

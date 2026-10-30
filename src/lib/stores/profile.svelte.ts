@@ -1,7 +1,7 @@
 import { errorMessage, profileApi } from '$lib/api';
 import type { Profile } from '$lib/types';
 
-/** Per-user visual preferences stored by the active OMP-MCP instance. */
+/** Per-user visual preferences stored by the active Toolsmith instance. */
 class ProfileStore {
   data = $state<Profile | null>(null);
 

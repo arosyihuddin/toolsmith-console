@@ -125,8 +125,8 @@
     let session: { paths: string[]; activePath: string | null } | null = null;
     let savedFileTabs: string[] = [];
     try {
-      session = JSON.parse(localStorage.getItem('omp-editor-git-diffs:' + root) ?? 'null');
-      const fileSession = JSON.parse(localStorage.getItem('omp-editor-session:' + root) ?? 'null');
+      session = JSON.parse(localStorage.getItem(editor.storageKey('omp-editor-git-diffs:', root)) ?? 'null');
+      const fileSession = JSON.parse(localStorage.getItem(editor.storageKey('omp-editor-session:', root)) ?? 'null');
       savedFileTabs = Array.isArray(fileSession?.tabs) ? fileSession.tabs : [];
     } catch {
       session = null;
@@ -256,6 +256,25 @@
   onMount(() => {
     // Restore the project and its open tabs after a page refresh.
     if (!editor.root && editor.tabs.length === 0) void editor.restoreLastSession();
+
+    const onInstanceChange = (event: Event) => {
+      const detail = (event as CustomEvent<{ id: string | null }>).detail;
+      diffRestoreRequestId++;
+      restoringDiffTabs = false;
+      restoredDiffRoot = '';
+      diffTabs = [];
+      activeDiffPath = null;
+      gitChanges = [];
+      gitRepoPath = '';
+      gitError = '';
+      terminalOpen = false;
+      filter = '';
+      sidebarTab = 'files';
+      showTree = true;
+      void editor.switchInstance(detail?.id ?? null);
+    };
+    window.addEventListener('omp-control:instance-change', onInstanceChange);
+    return () => window.removeEventListener('omp-control:instance-change', onInstanceChange);
   });
 
   onMount(() => {

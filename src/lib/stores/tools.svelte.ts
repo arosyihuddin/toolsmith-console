@@ -6,15 +6,19 @@ class ToolsStore {
   loading = $state(true);
   error = $state('');
   updating = $state<ReadonlySet<string>>(new Set());
+  private loadGeneration = 0;
 
   async load() {
+    const generation = ++this.loadGeneration;
     this.error = '';
+    this.loading = true;
     try {
-      this.items = await toolsApi.list();
+      const items = await toolsApi.list();
+      if (generation === this.loadGeneration) this.items = items;
     } catch (error) {
-      this.error = errorMessage(error, 'Unable to load tools');
+      if (generation === this.loadGeneration) this.error = errorMessage(error, 'Unable to load tools');
     } finally {
-      this.loading = false;
+      if (generation === this.loadGeneration) this.loading = false;
     }
   }
 

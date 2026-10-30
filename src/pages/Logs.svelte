@@ -9,7 +9,8 @@
 
   type StatusFilter = 'all' | 'waiting_approval' | 'running' | 'success' | 'error';
   const statusOptions = (['all', 'waiting_approval', 'running', 'success', 'error'] as const).map((value) => ({ value, label: value === 'waiting_approval' ? 'waiting approval' : value }));
-  const liveLogUpdates = new Map<string, ToolCallLog>();
+  let liveLogUpdates = new Map<string, ToolCallLog>();
+  let loadGeneration = 0;
 
   let logs = $state<ToolCallLog[]>([]);
   let loading = $state(true);
@@ -57,18 +58,20 @@
   });
 
   async function load() {
+    const generation = ++loadGeneration;
     loading = true;
     error = '';
     try {
       const fetched = await logsApi.list(limit);
+      if (generation !== loadGeneration) return;
       const merged = new Map(fetched.map((log) => [log.id, log]));
       for (const live of liveLogUpdates.values()) merged.set(live.id, live);
       logs = [...merged.values()].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()).slice(0, limit);
       hasMore = fetched.length >= limit;
     } catch (err) {
-      error = errorMessage(err, 'Unable to load logs');
+      if (generation === loadGeneration) error = errorMessage(err, 'Unable to load logs');
     } finally {
-      loading = false;
+      if (generation === loadGeneration) loading = false;
     }
   }
 
@@ -97,7 +100,17 @@
 
   onMount(() => {
     void load();
-    return onServerEvents(['tool_call.created', 'tool_call.updated'], (event) => {
+    const onInstanceChange = () => {
+      loadGeneration++;
+      logs = [];
+      liveLogUpdates = new Map();
+      expandedId = '';
+      limit = 200;
+      hasMore = true;
+      void load();
+    };
+    window.addEventListener('omp-control:instance-change', onInstanceChange);
+    const stopEvents = onServerEvents(['tool_call.created', 'tool_call.updated'], (event) => {
       try {
         const log = JSON.parse(event.data) as ToolCallLog;
         if (!log?.id) return;
@@ -114,6 +127,7 @@
         // Ignore malformed live events; manual refresh can recover the persisted state.
       }
     });
+    return () => { stopEvents(); window.removeEventListener('omp-control:instance-change', onInstanceChange); };
   });
 
   $effect(() => {

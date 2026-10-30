@@ -179,7 +179,7 @@
     <div class="mb-9 max-w-2xl">
       <p class="mb-3 text-xs font-semibold uppercase tracking-[0.24em] text-accent">Choose your workspace</p>
       <h1 class="text-3xl font-semibold tracking-tight sm:text-5xl">Which server are we using?</h1>
-      <p class="mt-4 max-w-xl text-sm leading-6 text-fg-subtle sm:text-base">Pilih instance OMP-MCP untuk membuka workspace. Hubungkan server terlebih dahulu jika ini pertama kalinya.</p>
+      <p class="mt-4 max-w-xl text-sm leading-6 text-fg-subtle sm:text-base">Pilih instance Toolsmith untuk membuka workspace. Hubungkan server terlebih dahulu jika ini pertama kalinya.</p>
     </div>
 
     {#if error}
@@ -192,7 +192,7 @@
       <div class="flex min-h-64 flex-col items-center justify-center rounded-2xl border border-dashed border-line bg-surface px-6 py-12 text-center">
         <div class="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl border border-line bg-surface-hover"><Server size={28} class="text-accent"/></div>
         <h2 class="text-xl font-semibold text-fg">No servers yet</h2>
-        <p class="mt-2 max-w-md text-sm leading-6 text-fg-subtle">Tambahkan instance OMP-MCP untuk mulai. Setelah terhubung, server akan muncul di sini seperti pilihan profil.</p>
+        <p class="mt-2 max-w-md text-sm leading-6 text-fg-subtle">Tambahkan instance Toolsmith untuk mulai. Setelah terhubung, server akan muncul di sini seperti pilihan profil.</p>
         <button type="button" class="mt-6 inline-flex h-11 items-center gap-2 rounded-lg bg-accent px-5 text-sm font-semibold text-canvas transition hover:bg-accent-hover" onclick={openCreate}><Plus size={16}/> Add your first instance</button>
       </div>
     {:else}
@@ -229,20 +229,20 @@
         <button type="button" class="flex min-h-44 flex-col items-center justify-center rounded-2xl border border-dashed border-line bg-transparent p-5 text-center transition hover:border-accent/50 hover:bg-surface-hover" onclick={openCreate}>
           <span class="flex h-12 w-12 items-center justify-center rounded-xl border border-line bg-surface-hover"><Plus size={22} class="text-fg-subtle"/></span>
           <span class="mt-4 text-sm font-semibold">Add another server</span>
-          <span class="mt-1 text-xs text-fg-faint">Connect an OMP-MCP instance</span>
+          <span class="mt-1 text-xs text-fg-faint">Connect an Toolsmith instance</span>
         </button>
       </div>
     {/if}
 
     <div class="mt-10 border-t border-line pt-5 text-xs text-fg-faint">
-      <span>Instance selection · OMP Control Plane</span>
+      <span>Instance selection · Toolsmith Console</span>
     </div>
   </main>
 </div>
 
 <ProfileModal open={settingsOpen} initialSection="profile" onclose={() => (settingsOpen = false)} />
 
-<Modal open={Boolean(editing)} title="Edit OMP-MCP instance" description="Update this server connection" width="max-w-lg" onclose={() => { if (!saving) editing = null; }}>
+<Modal open={Boolean(editing)} title="Edit Toolsmith instance" description="Update this server connection" width="max-w-lg" onclose={() => { if (!saving) editing = null; }}>
   <form id="picker-instance-edit" class="space-y-4 px-4 py-4" onsubmit={saveEdit}>
     <label class="block space-y-1.5 text-sm"><span class="text-fg-subtle">Display name</span><input required maxlength="80" bind:value={editName} class="h-10 w-full rounded-lg border border-line bg-canvas px-3 text-fg outline-none focus:border-accent"/></label>
     <label class="block space-y-1.5 text-sm"><span class="text-fg-subtle">Base URL</span><input required type="url" bind:value={editUrl} class="h-10 w-full rounded-lg border border-line bg-canvas px-3 text-fg outline-none focus:border-accent"/><span class="block text-xs text-fg-faint">Use HTTPS except for localhost development instances.</span></label>
@@ -255,11 +255,11 @@
   {/snippet}
 </Modal>
 
-<Modal open={creating} title="Add OMP-MCP instance" description="Register a server in this control plane" width="max-w-lg" onclose={() => { if (!createSaving) creating = false; }} autofocus>
+<Modal open={creating} title="Add Toolsmith instance" description="Register a server in this control plane" width="max-w-lg" onclose={() => { if (!createSaving) creating = false; }} autofocus>
   <form id="picker-instance-create" class="space-y-4 px-4 py-4" onsubmit={saveCreate}>
-    <label class="block space-y-1.5 text-sm"><span class="text-fg-subtle">Display name</span><input required maxlength="80" bind:value={createName} class="h-10 w-full rounded-lg border border-line bg-canvas px-3 text-fg outline-none focus:border-accent" placeholder="My OMP-MCP server"/></label>
+    <label class="block space-y-1.5 text-sm"><span class="text-fg-subtle">Display name</span><input required maxlength="80" bind:value={createName} class="h-10 w-full rounded-lg border border-line bg-canvas px-3 text-fg outline-none focus:border-accent" placeholder="My Toolsmith server"/></label>
     <label class="block space-y-1.5 text-sm"><span class="text-fg-subtle">Base URL</span><input required type="url" bind:value={createUrl} class="h-10 w-full rounded-lg border border-line bg-canvas px-3 text-fg outline-none focus:border-accent"/><span class="block text-xs text-fg-faint">Use HTTPS except for localhost development instances.</span></label>
-    <label class="block space-y-1.5 text-sm"><span class="text-fg-subtle">Bearer token</span><div class="relative"><input required type={createCredentialVisible ? 'text' : 'password'} autocomplete="new-password" bind:value={createCredential} placeholder="Paste OMP_API_TOKEN from server setup" class="h-10 w-full rounded-lg border border-line bg-canvas px-3 pr-10 text-fg outline-none focus:border-accent"/><button type="button" class="absolute inset-y-0 right-0 inline-flex w-10 items-center justify-center text-fg-subtle hover:text-fg" aria-label={createCredentialVisible ? 'Hide bearer token' : 'Show bearer token'} title={createCredentialVisible ? 'Hide token' : 'Show token'} onclick={() => (createCredentialVisible = !createCredentialVisible)}>{#if createCredentialVisible}<EyeOff size={16}/>{:else}<Eye size={16}/>{/if}</button></div><span class="block text-xs text-fg-faint">Required. Use the token generated during OMP-MCP setup.</span></label>
+    <label class="block space-y-1.5 text-sm"><span class="text-fg-subtle">Bearer token</span><div class="relative"><input required type={createCredentialVisible ? 'text' : 'password'} autocomplete="new-password" bind:value={createCredential} placeholder="Paste TOOLSMITH_API_TOKEN (or legacy OMP_API_TOKEN) from server setup" class="h-10 w-full rounded-lg border border-line bg-canvas px-3 pr-10 text-fg outline-none focus:border-accent"/><button type="button" class="absolute inset-y-0 right-0 inline-flex w-10 items-center justify-center text-fg-subtle hover:text-fg" aria-label={createCredentialVisible ? 'Hide bearer token' : 'Show bearer token'} title={createCredentialVisible ? 'Hide token' : 'Show token'} onclick={() => (createCredentialVisible = !createCredentialVisible)}>{#if createCredentialVisible}<EyeOff size={16}/>{:else}<Eye size={16}/>{/if}</button></div><span class="block text-xs text-fg-faint">Required. Use the token generated during Toolsmith setup.</span></label>
     {#if createError}<div role="alert" class="flex items-start gap-2 rounded-lg border border-red-400/30 bg-red-400/10 p-3 text-sm text-red-500 dark:text-red-200"><CircleAlert size={16}/>{createError}</div>{/if}
   </form>
   {#snippet footer()}

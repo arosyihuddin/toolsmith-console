@@ -25,6 +25,21 @@ class EditorStore {
   error = $state('');
   private sessionRoot = '';
   private saveTimer: ReturnType<typeof setTimeout> | undefined;
+  instanceId = $state(readString('omp-control-active-instance') ?? 'none');
+
+  storageKey(prefix: string, root: string) {
+    return prefix + encodeURIComponent(this.instanceId || 'none') + ':' + root;
+  }
+
+  async switchInstance(id: string | null) {
+    const nextId = id ?? 'none';
+    if (nextId === this.instanceId) return;
+    clearTimeout(this.saveTimer);
+    this.saveTimer = undefined;
+    this.instanceId = nextId;
+    this.closeProject();
+    await this.restoreLastSession();
+  }
 
   activeTab = $derived(this.tabs.find((tab) => tab.path === this.activePath) ?? null);
   path = $derived(this.activeTab?.path ?? '');
@@ -49,7 +64,7 @@ class EditorStore {
   }
 
   async restoreLastSession() {
-    const root = readString(storageKeys.editorLastRoot);
+    const root = readString(this.storageKey(storageKeys.editorLastRoot, 'value'));
     if (root) await this.openFolder(root);
   }
 
@@ -67,7 +82,7 @@ class EditorStore {
       this.items = [];
     }
     this.root = path;
-    writeString(storageKeys.editorLastRoot, path);
+    writeString(this.storageKey(storageKeys.editorLastRoot, 'value'), path);
     this.dir = path;
     this.error = '';
     prefs.remember(path, name);
@@ -78,19 +93,22 @@ class EditorStore {
   async restoreSession(root: string) {
     if (this.sessionRoot === root) return;
     this.sessionRoot = root;
-    const localSession = readJson<{ tabs: string[]; activePath: string | null } | null>('omp-editor-session:' + root, null);
+    const instanceId = this.instanceId;
+    const localSession = readJson<{ tabs: string[]; activePath: string | null } | null>(this.storageKey('omp-editor-session:', root), null);
     try {
       const session = await workspaceStateApi.getEditorSession(root);
+      if (instanceId !== this.instanceId || root !== this.root) return;
       const tabs = session?.tabs?.length ? session.tabs : (localSession?.tabs ?? []);
       const activePath = session?.activePath ?? localSession?.activePath ?? null;
-      const previewPath = readString('omp-editor-preview:' + root);
+      const previewPath = readString(this.storageKey('omp-editor-preview:', root));
       for (const path of tabs) await this.openFile(path, undefined, path === previewPath, false);
       if (activePath && this.tabs.some((tab) => tab.path === activePath)) this.activePath = activePath;
       else if (!this.activePath && this.tabs.length) this.activePath = this.tabs[0].path;
       this.scheduleSessionSave();
     } catch {
+      if (instanceId !== this.instanceId || root !== this.root) return;
       // Restore from the local snapshot if server-side session persistence is unavailable.
-      const previewPath = readString('omp-editor-preview:' + root);
+      const previewPath = readString(this.storageKey('omp-editor-preview:', root));
       for (const path of localSession?.tabs ?? []) await this.openFile(path, undefined, path === previewPath, false);
       if (localSession?.activePath && this.tabs.some((tab) => tab.path === localSession.activePath)) this.activePath = localSession.activePath;
       else if (!this.activePath && this.tabs.length) this.activePath = this.tabs[0].path;
@@ -204,7 +222,7 @@ class EditorStore {
       // Closing a project should remove it from the active editor, not erase its
       // saved tabs or preview state. It remains available from the project menu.
       try {
-        localStorage.removeItem(storageKeys.editorLastRoot);
+        localStorage.removeItem(this.storageKey(storageKeys.editorLastRoot, 'value'));
       } catch {
         // Closing the project should still clear the editor if storage is unavailable.
       }
@@ -228,8 +246,8 @@ class EditorStore {
     const activePath = this.activePath || null;
     const previewPath = this.tabs.find((tab) => tab.preview)?.path ?? '';
     const snapshot = { tabs, activePath };
-    writeJson('omp-editor-session:' + root, snapshot);
-    writeString('omp-editor-preview:' + root, previewPath);
+    writeJson(this.storageKey('omp-editor-session:', root), snapshot);
+    writeString(this.storageKey('omp-editor-preview:', root), previewPath);
     clearTimeout(this.saveTimer);
     this.saveTimer = setTimeout(() => {
       void workspaceStateApi.saveEditorSession(root, tabs, activePath).catch(() => {});
