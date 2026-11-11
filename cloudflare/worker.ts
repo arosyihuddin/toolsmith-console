@@ -239,6 +239,7 @@ async function instance(env: Env, id: string) {
 const exact: Record<string, string[]> = {
   "/api/dashboard": ["GET"],
   "/api/events": ["GET"],
+  "/api/processes": ["GET"],
   "/api/tunnels": ["GET", "POST"],
   "/api/tunnels/status": ["GET"],
   "/api/tunnels/events": ["GET"],
@@ -275,6 +276,7 @@ const exact: Record<string, string[]> = {
 function allowed(path: string, method: string) {
   if (exact[path]?.includes(method)) return true;
   if (/^\/api\/terminals\/[^/]+$/.test(path)) return method === "DELETE";
+  if (/^\/api\/processes\/[^/]+$/.test(path)) return method === "DELETE";
   if (/^\/api\/tunnels\/[^/]+$/.test(path)) return method === "GET";
   if (/^\/api\/tunnels\/[^/]+\/logs$/.test(path)) return method === "GET";
   if (/^\/api\/tunnels\/[^/]+\/stop$/.test(path)) return method === "POST" || method === "DELETE";
