@@ -470,10 +470,10 @@ async function handle(req: Request, env: Env): Promise<Response> {
           "INVALID_USERNAME",
           "Username must be 3–64 characters and use letters, numbers, dots, underscores, or hyphens",
         );
-      if (password.length < 12 || password.length > 1024)
+      if (password.length < 8 || password.length > 1024)
         return fail(
           "INVALID_PASSWORD",
-          "Password must be between 12 and 1024 characters",
+          "Password must be between 8 and 1024 characters",
         );
       const id = uuid(),
         token = uuid() + uuid(),
