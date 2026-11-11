@@ -125,8 +125,8 @@
     let session: { paths: string[]; activePath: string | null } | null = null;
     let savedFileTabs: string[] = [];
     try {
-      session = JSON.parse(localStorage.getItem(editor.storageKey('omp-editor-git-diffs:', root)) ?? 'null');
-      const fileSession = JSON.parse(localStorage.getItem(editor.storageKey('omp-editor-session:', root)) ?? 'null');
+      session = JSON.parse(localStorage.getItem(editor.storageKey('toolsmith-editor-git-diffs:', root)) ?? 'null');
+      const fileSession = JSON.parse(localStorage.getItem(editor.storageKey('toolsmith-editor-session:', root)) ?? 'null');
       savedFileTabs = Array.isArray(fileSession?.tabs) ? fileSession.tabs : [];
     } catch {
       session = null;
@@ -176,7 +176,7 @@
     const activePath = activeDiffPath;
     if (!root || restoringDiffTabs || restoredDiffRoot !== root) return;
     try {
-      localStorage.setItem('omp-editor-git-diffs:' + root, JSON.stringify({ paths, activePath }));
+      localStorage.setItem('toolsmith-editor-git-diffs:' + root, JSON.stringify({ paths, activePath }));
     } catch {
       // Keep Git diff tabs usable if browser storage is unavailable.
     }
@@ -237,7 +237,7 @@
 
   onMount(() => {
     try {
-      fullscreen = localStorage.getItem('omp-editor-fullscreen') === 'true';
+      fullscreen = localStorage.getItem('toolsmith-editor-fullscreen') === 'true';
     } catch {
       fullscreen = false;
     }
@@ -273,8 +273,8 @@
       showTree = true;
       void editor.switchInstance(detail?.id ?? null);
     };
-    window.addEventListener('omp-control:instance-change', onInstanceChange);
-    return () => window.removeEventListener('omp-control:instance-change', onInstanceChange);
+    window.addEventListener('toolsmith-console:instance-change', onInstanceChange);
+    return () => window.removeEventListener('toolsmith-console:instance-change', onInstanceChange);
   });
 
   onMount(() => {
@@ -350,7 +350,7 @@
   function toggleFullscreen() {
     fullscreen = !fullscreen;
     try {
-      localStorage.setItem('omp-editor-fullscreen', String(fullscreen));
+      localStorage.setItem('toolsmith-editor-fullscreen', String(fullscreen));
     } catch {
       // Keep fullscreen usable when localStorage is unavailable.
     }

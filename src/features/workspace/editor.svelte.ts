@@ -25,7 +25,7 @@ class EditorStore {
   error = $state('');
   private sessionRoot = '';
   private saveTimer: ReturnType<typeof setTimeout> | undefined;
-  instanceId = $state(readString('omp-control-active-instance') ?? 'none');
+  instanceId = $state(readString('toolsmith-console-active-instance') ?? 'none');
 
   storageKey(prefix: string, root: string) {
     return prefix + encodeURIComponent(this.instanceId || 'none') + ':' + root;
@@ -94,13 +94,13 @@ class EditorStore {
     if (this.sessionRoot === root) return;
     this.sessionRoot = root;
     const instanceId = this.instanceId;
-    const localSession = readJson<{ tabs: string[]; activePath: string | null } | null>(this.storageKey('omp-editor-session:', root), null);
+    const localSession = readJson<{ tabs: string[]; activePath: string | null } | null>(this.storageKey('toolsmith-editor-session:', root), null);
     try {
       const session = await workspaceStateApi.getEditorSession(root);
       if (instanceId !== this.instanceId || root !== this.root) return;
       const tabs = session?.tabs?.length ? session.tabs : (localSession?.tabs ?? []);
       const activePath = session?.activePath ?? localSession?.activePath ?? null;
-      const previewPath = readString(this.storageKey('omp-editor-preview:', root));
+      const previewPath = readString(this.storageKey('toolsmith-editor-preview:', root));
       for (const path of tabs) await this.openFile(path, undefined, path === previewPath, false);
       if (activePath && this.tabs.some((tab) => tab.path === activePath)) this.activePath = activePath;
       else if (!this.activePath && this.tabs.length) this.activePath = this.tabs[0].path;
@@ -108,7 +108,7 @@ class EditorStore {
     } catch {
       if (instanceId !== this.instanceId || root !== this.root) return;
       // Restore from the local snapshot if server-side session persistence is unavailable.
-      const previewPath = readString(this.storageKey('omp-editor-preview:', root));
+      const previewPath = readString(this.storageKey('toolsmith-editor-preview:', root));
       for (const path of localSession?.tabs ?? []) await this.openFile(path, undefined, path === previewPath, false);
       if (localSession?.activePath && this.tabs.some((tab) => tab.path === localSession.activePath)) this.activePath = localSession.activePath;
       else if (!this.activePath && this.tabs.length) this.activePath = this.tabs[0].path;
@@ -246,8 +246,8 @@ class EditorStore {
     const activePath = this.activePath || null;
     const previewPath = this.tabs.find((tab) => tab.preview)?.path ?? '';
     const snapshot = { tabs, activePath };
-    writeJson(this.storageKey('omp-editor-session:', root), snapshot);
-    writeString(this.storageKey('omp-editor-preview:', root), previewPath);
+    writeJson(this.storageKey('toolsmith-editor-session:', root), snapshot);
+    writeString(this.storageKey('toolsmith-editor-preview:', root), previewPath);
     clearTimeout(this.saveTimer);
     this.saveTimer = setTimeout(() => {
       void workspaceStateApi.saveEditorSession(root, tabs, activePath).catch(() => {});

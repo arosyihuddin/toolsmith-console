@@ -2,7 +2,7 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { spawnSync } from 'node:child_process';
 const configPath = 'wrangler.jsonc';
-const databaseName = 'omp-control';
+const databaseName = 'toolsmith-console';
 const placeholder = '00000000000000000000000000000000';
 function run(args) {
   const result = spawnSync('wrangler', args, { encoding: 'utf8', stdio: ['inherit', 'pipe', 'inherit'] });

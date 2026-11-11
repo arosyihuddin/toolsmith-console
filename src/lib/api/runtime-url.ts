@@ -1,4 +1,4 @@
-const ACTIVE_INSTANCE_KEY = "omp-control-active-instance";
+const ACTIVE_INSTANCE_KEY = "toolsmith-console-active-instance";
 
 function activeInstanceId(): string | null {
   try { return localStorage.getItem(ACTIVE_INSTANCE_KEY); } catch { return null; }

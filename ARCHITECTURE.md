@@ -21,8 +21,8 @@ This document defines frontend and control-plane implementation constraints. Too
 
 ## State and compatibility
 
-- Keep existing browser storage keys and custom event names stable unless a deliberate migration is implemented; they are used by multiple Console components.
-- The Cloudflare D1 database identifier remains omp-control during this local rebrand. Do not rename the remote database or run remote migrations as part of source edits.
+- Browser storage keys and custom event names use the Toolsmith Console namespace consistently across components.
+- Cloudflare Worker and D1 resources use the Toolsmith Console name. D1 replacement must preserve exported data and retain the previous database for rollback until verification.
 - Existing deployment URLs and credentials must continue to work while the runtime and Console are migrated separately.
 - Do not overwrite unrelated working-tree changes, including terminal/workspace improvements and font asset changes.
 

@@ -154,7 +154,7 @@
         </button>
       {/if}
       <div class="flex h-9 w-9 items-center justify-center rounded-lg border border-line bg-surface"><Server size={18} class="text-fg"/></div>
-      <span class="text-sm font-semibold tracking-[0.18em]">OMP CONTROL</span>
+      <span class="text-sm font-semibold tracking-[0.18em]">TOOLSMITH CONSOLE</span>
     </div>
     <div class="relative" data-account-menu>
       <div class="flex items-center gap-1">
@@ -167,7 +167,7 @@
           <button type="button" class="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm text-fg-subtle transition hover:bg-surface-hover hover:text-fg" onclick={() => { accountOpen = false; settingsOpen = true; }}>
             <Settings2 size={15}/> Settings
           </button>
-          <button type="button" class="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm text-danger transition hover:bg-danger/10" onclick={() => { accountOpen = false; window.dispatchEvent(new CustomEvent('omp-control:logout')); }}>
+          <button type="button" class="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm text-danger transition hover:bg-danger/10" onclick={() => { accountOpen = false; window.dispatchEvent(new CustomEvent('toolsmith-console:logout')); }}>
             <LogOut size={15}/> Log out
           </button>
         </div>
@@ -259,7 +259,7 @@
   <form id="picker-instance-create" class="space-y-4 px-4 py-4" onsubmit={saveCreate}>
     <label class="block space-y-1.5 text-sm"><span class="text-fg-subtle">Display name</span><input required maxlength="80" bind:value={createName} class="h-10 w-full rounded-lg border border-line bg-canvas px-3 text-fg outline-none focus:border-accent" placeholder="My Toolsmith server"/></label>
     <label class="block space-y-1.5 text-sm"><span class="text-fg-subtle">Base URL</span><input required type="url" bind:value={createUrl} class="h-10 w-full rounded-lg border border-line bg-canvas px-3 text-fg outline-none focus:border-accent"/><span class="block text-xs text-fg-faint">Use HTTPS except for localhost development instances.</span></label>
-    <label class="block space-y-1.5 text-sm"><span class="text-fg-subtle">Bearer token</span><div class="relative"><input required type={createCredentialVisible ? 'text' : 'password'} autocomplete="new-password" bind:value={createCredential} placeholder="Paste TOOLSMITH_API_TOKEN (or legacy OMP_API_TOKEN) from server setup" class="h-10 w-full rounded-lg border border-line bg-canvas px-3 pr-10 text-fg outline-none focus:border-accent"/><button type="button" class="absolute inset-y-0 right-0 inline-flex w-10 items-center justify-center text-fg-subtle hover:text-fg" aria-label={createCredentialVisible ? 'Hide bearer token' : 'Show bearer token'} title={createCredentialVisible ? 'Hide token' : 'Show token'} onclick={() => (createCredentialVisible = !createCredentialVisible)}>{#if createCredentialVisible}<EyeOff size={16}/>{:else}<Eye size={16}/>{/if}</button></div><span class="block text-xs text-fg-faint">Required. Use the token generated during Toolsmith setup.</span></label>
+    <label class="block space-y-1.5 text-sm"><span class="text-fg-subtle">Bearer token</span><div class="relative"><input required type={createCredentialVisible ? 'text' : 'password'} autocomplete="new-password" bind:value={createCredential} placeholder="Paste TOOLSMITH_API_TOKEN from server setup" class="h-10 w-full rounded-lg border border-line bg-canvas px-3 pr-10 text-fg outline-none focus:border-accent"/><button type="button" class="absolute inset-y-0 right-0 inline-flex w-10 items-center justify-center text-fg-subtle hover:text-fg" aria-label={createCredentialVisible ? 'Hide bearer token' : 'Show bearer token'} title={createCredentialVisible ? 'Hide token' : 'Show token'} onclick={() => (createCredentialVisible = !createCredentialVisible)}>{#if createCredentialVisible}<EyeOff size={16}/>{:else}<Eye size={16}/>{/if}</button></div><span class="block text-xs text-fg-faint">Required. Use the token generated during Toolsmith setup.</span></label>
     {#if createError}<div role="alert" class="flex items-start gap-2 rounded-lg border border-red-400/30 bg-red-400/10 p-3 text-sm text-red-500 dark:text-red-200"><CircleAlert size={16}/>{createError}</div>{/if}
   </form>
   {#snippet footer()}

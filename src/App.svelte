@@ -65,10 +65,10 @@
       if (router.inWorkspace) void prefs.reload();
       void profile.load();
     };
-    window.addEventListener('omp-control:instance-change', onInstanceChange);
-    window.addEventListener('omp-control:show-instance-picker', onShowInstancePicker);
-    window.addEventListener('omp-control:auth-required', onAuthRequired);
-    window.addEventListener('omp-control:logout', onLogout);
+    window.addEventListener('toolsmith-console:instance-change', onInstanceChange);
+    window.addEventListener('toolsmith-console:show-instance-picker', onShowInstancePicker);
+    window.addEventListener('toolsmith-console:auth-required', onAuthRequired);
+    window.addEventListener('toolsmith-console:logout', onLogout);
     void fetch('/control/v1/auth/status')
       .then((response) => response.ok ? response.json() : Promise.reject(new Error('Unable to check login status')))
       .then(async (status: { authenticated: boolean; username?: string | null }) => {
@@ -87,10 +87,10 @@
     return () => {
       stopRouter();
       stopDashboardEvents?.();
-      window.removeEventListener('omp-control:instance-change', onInstanceChange);
-      window.removeEventListener('omp-control:show-instance-picker', onShowInstancePicker);
-      window.removeEventListener('omp-control:logout', onLogout);
-      window.removeEventListener('omp-control:auth-required', onAuthRequired);
+      window.removeEventListener('toolsmith-console:instance-change', onInstanceChange);
+      window.removeEventListener('toolsmith-console:show-instance-picker', onShowInstancePicker);
+      window.removeEventListener('toolsmith-console:logout', onLogout);
+      window.removeEventListener('toolsmith-console:auth-required', onAuthRequired);
     };
   });
 

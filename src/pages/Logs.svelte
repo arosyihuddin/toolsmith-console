@@ -109,7 +109,7 @@
       hasMore = true;
       void load();
     };
-    window.addEventListener('omp-control:instance-change', onInstanceChange);
+    window.addEventListener('toolsmith-console:instance-change', onInstanceChange);
     const stopEvents = onServerEvents(['tool_call.created', 'tool_call.updated'], (event) => {
       try {
         const log = JSON.parse(event.data) as ToolCallLog;
@@ -127,7 +127,7 @@
         // Ignore malformed live events; manual refresh can recover the persisted state.
       }
     });
-    return () => { stopEvents(); window.removeEventListener('omp-control:instance-change', onInstanceChange); };
+    return () => { stopEvents(); window.removeEventListener('toolsmith-console:instance-change', onInstanceChange); };
   });
 
   $effect(() => {

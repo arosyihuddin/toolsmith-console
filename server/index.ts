@@ -4,7 +4,7 @@ import { dirname, resolve } from "node:path";
 import { createHash, randomUUID, timingSafeEqual } from "node:crypto";
 
 function initializeDatabase(): Database {
-  const dbPath = resolve("./data/omp-control.sqlite");
+  const dbPath = resolve("./data/toolsmith-console.sqlite");
   mkdirSync(dirname(dbPath), { recursive: true });
   const previousUmask = process.umask(0o077);
   let database: Database;
@@ -62,7 +62,7 @@ function recordRecoveryFailure(req: Request): void {
 function recoveryTokenMatches(provided: string, configured: string): boolean {
   return timingSafeEqual(createHash("sha256").update(provided).digest(), createHash("sha256").update(configured).digest());
 }
-const cookieName = "omp_control_session";
+const cookieName = "toolsmith_console_session";
 function requestUsesHttps(req: Request): boolean {
   const origin = req.headers.get("origin");
   if (origin) {
@@ -326,7 +326,7 @@ async function upgradeRuntimeSocket(platform: any, instanceId: string, path: str
 
 export async function handleControlRequest(req: Request, server?: any): Promise<Response> {
   const url = new URL(req.url);
-  if (url.pathname === "/healthz") return send({ status: "ok", service: "omp-control" });
+  if (url.pathname === "/healthz") return send({ status: "ok", service: "toolsmith-console" });
   if (!url.pathname.startsWith("/control/v1/")) return fail("NOT_FOUND", "Route not found", 404);
   try {
     if (url.pathname === "/control/v1/auth/status" && req.method === "GET") {
@@ -360,7 +360,7 @@ export async function handleControlRequest(req: Request, server?: any): Promise<
     }
     if (url.pathname === "/control/v1/auth/recovery/verify" && req.method === "POST") {
       if (recoveryRateLimited(req)) return fail("RECOVERY_RATE_LIMITED", "Terlalu banyak percobaan. Coba lagi dalam 15 menit.", 429);
-      const configuredToken = process.env.OMP_ADMIN_RECOVERY_TOKEN ?? "";
+      const configuredToken = process.env.TOOLSMITH_ADMIN_RECOVERY_TOKEN ?? "";
       if (configuredToken.length < 32) return fail("RECOVERY_UNAVAILABLE", "Pemulihan password belum dikonfigurasi dengan aman di server.", 503);
       const body = await readJson(req);
       const supplied = typeof body.token === "string" ? body.token : "";

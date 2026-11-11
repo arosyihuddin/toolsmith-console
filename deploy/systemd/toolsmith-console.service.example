@@ -1,17 +1,17 @@
 [Unit]
-Description=OMP Control Dashboard
+Description=Toolsmith Console
 After=network.target
 
 [Service]
 Type=simple
 User=era
 Group=era
-WorkingDirectory=/home/era/Documents/Rosik/omp/omp-control
+WorkingDirectory=/opt/toolsmith-console
 Environment=HOME=/home/era
 Environment=NODE_ENV=production
 Environment=HTTP_HOST=0.0.0.0
 Environment=HTTP_PORT=5173
-ExecStart=/opt/omp-mcp/bin/bun run start
+ExecStart=/usr/bin/env bun run start
 Restart=on-failure
 RestartSec=5
 

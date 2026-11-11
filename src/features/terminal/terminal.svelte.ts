@@ -57,11 +57,11 @@ export class TerminalController {
     this.scope = options.scope ?? 'general';
     this.getWorkspaceRoot = options.getWorkspaceRoot ?? (() => '');
     this.currentWorkspaceRoot = this.getWorkspaceRoot();
-    if (typeof window !== 'undefined') window.addEventListener('omp-control:instance-change', this.onInstanceChange);
+    if (typeof window !== 'undefined') window.addEventListener('toolsmith-console:instance-change', this.onInstanceChange);
   }
 
   private readInstanceId() {
-    try { return localStorage.getItem('omp-control-active-instance') ?? 'none'; } catch { return 'none'; }
+    try { return localStorage.getItem('toolsmith-console-active-instance') ?? 'none'; } catch { return 'none'; }
   }
 
   private get storageKey() {
@@ -193,7 +193,7 @@ export class TerminalController {
 
   dispose() {
     this.disconnect();
-    if (typeof window !== 'undefined') window.removeEventListener('omp-control:instance-change', this.onInstanceChange);
+    if (typeof window !== 'undefined') window.removeEventListener('toolsmith-console:instance-change', this.onInstanceChange);
     this.view = null;
   }
 

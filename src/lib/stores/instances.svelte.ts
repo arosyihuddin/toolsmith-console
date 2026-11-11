@@ -67,11 +67,11 @@ class InstanceRegistry {
     const changed = next !== this.activeId;
     this.activeId = next;
     setStoredActiveInstance(this.activeId);
-    if (changed && typeof window !== "undefined") window.dispatchEvent(new CustomEvent("omp-control:instance-change", { detail: { id: this.activeId } }));
+    if (changed && typeof window !== "undefined") window.dispatchEvent(new CustomEvent("toolsmith-console:instance-change", { detail: { id: this.activeId } }));
   }
 
   private readStoredId(): string | null {
-    try { return localStorage.getItem("omp-control-active-instance"); } catch { return null; }
+    try { return localStorage.getItem("toolsmith-console-active-instance"); } catch { return null; }
   }
 }
 

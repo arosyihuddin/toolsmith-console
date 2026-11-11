@@ -25,5 +25,5 @@ while (port <= 65535 && !(await isPortAvailable(port, host))) {
 }
 
 if (port > 65535) throw new Error(`No available port found starting from ${startPort}`);
-console.log(`Starting OMP-Control dev server on http://${host === '0.0.0.0' ? 'localhost' : host}:${port}`);
+console.log(`Starting Toolsmith Console dev server on http://${host === '0.0.0.0' ? 'localhost' : host}:${port}`);
 await startDevServer({ host, port });

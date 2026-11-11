@@ -60,14 +60,14 @@
           <div class="truncate text-xs text-fg-subtle">@{username}</div>
         </div>
       </div>
-      <button type="button" class="mt-3 flex w-full items-center gap-2.5 rounded-md border border-line px-2.5 py-2 text-left text-sm text-fg-muted transition-colors hover:border-line-strong hover:bg-surface-hover hover:text-fg" title="Switch instance" onclick={() => { close(); window.dispatchEvent(new CustomEvent('omp-control:show-instance-picker')); }}>
+      <button type="button" class="mt-3 flex w-full items-center gap-2.5 rounded-md border border-line px-2.5 py-2 text-left text-sm text-fg-muted transition-colors hover:border-line-strong hover:bg-surface-hover hover:text-fg" title="Switch instance" onclick={() => { close(); window.dispatchEvent(new CustomEvent('toolsmith-console:show-instance-picker')); }}>
         <Server size={14} class={['shrink-0', isChecking ? 'text-fg-faint' : instanceStatus === 'online' ? 'text-success' : instanceStatus === 'offline' ? 'text-danger' : instanceStatus === 'degraded' ? 'text-warning' : 'text-fg-faint']} />
         <span class="min-w-0 flex-1 truncate">{instanceName}</span>
         <ArrowLeftRight size={14} class="shrink-0 text-fg-subtle" />
       </button>
     </div>
     <MenuItem onclick={() => { close(); settingsOpen = true; }}><Settings size={13} /> Settings</MenuItem>
-    <MenuItem tone="danger" onclick={() => { close(); window.dispatchEvent(new CustomEvent('omp-control:logout')); }}><LogOut size={13} /> Logout</MenuItem>
+    <MenuItem tone="danger" onclick={() => { close(); window.dispatchEvent(new CustomEvent('toolsmith-console:logout')); }}><LogOut size={13} /> Logout</MenuItem>
   {/snippet}
 </Menu>
 

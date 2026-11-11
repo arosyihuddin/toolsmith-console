@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
-  "name": "omp-control",
+  "name": "toolsmith-console",
   "main": "cloudflare/worker.ts",
   "compatibility_date": "2026-10-12",
   "compatibility_flags": ["nodejs_compat"],
@@ -13,8 +13,8 @@
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "omp-control",
-      "database_id": "a23611f0-b41f-465e-a456-6ea48ec6b8f6",
+      "database_name": "toolsmith-console",
+      "database_id": "7b19aaf4-6adc-47c8-b1c6-95f98dc873e0",
       "migrations_dir": "migrations",
     },
   ],

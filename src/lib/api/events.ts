@@ -126,7 +126,7 @@ if (typeof window !== 'undefined') {
       attachSource();
     }
   });
-  window.addEventListener('omp-control:instance-change', () => {
+  window.addEventListener('toolsmith-console:instance-change', () => {
     source?.close();
     source = null;
     attached.clear();

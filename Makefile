@@ -3,7 +3,7 @@ export PATH := $(HOME)/.bun/bin:$(PATH)
 .PHONY: help check build build-cloudflare release
 
 help:
-	@echo "OMP Control targets"
+	@echo "Toolsmith Console targets"
 	@echo "  make check                         Run Svelte and TypeScript checks"
 	@echo "  make build                         Build the self-hosted Bun target"
 	@echo "  make build-cloudflare              Build the Cloudflare Worker target"

@@ -1,14 +1,14 @@
 /** Safe, typed wrappers around localStorage (private mode / quota safe). */
 export const storageKeys = {
-  theme: 'omp-theme',
-  sidebarCollapsed: 'omp-sidebar-collapsed',
-  terminalSessionsOpen: 'omp-mcp-terminal-sessions-open',
-  terminalActiveId: 'omp-mcp-terminal-active-id',
-  editorLastRoot: 'omp-editor-last-root',
-  workspaceFavorites: 'omp-workspace-favorites',
-  workspaceRecents: 'omp-workspace-recents',
-  workspaceView: 'omp-workspace-view',
-  workspaceHidden: 'omp-workspace-hidden',
+  theme: 'toolsmith-theme',
+  sidebarCollapsed: 'toolsmith-sidebar-collapsed',
+  terminalSessionsOpen: 'toolsmith-terminal-sessions-open',
+  terminalActiveId: 'toolsmith-terminal-active-id',
+  editorLastRoot: 'toolsmith-editor-last-root',
+  workspaceFavorites: 'toolsmith-workspace-favorites',
+  workspaceRecents: 'toolsmith-workspace-recents',
+  workspaceView: 'toolsmith-workspace-view',
+  workspaceHidden: 'toolsmith-workspace-hidden',
 } as const;
 
 export function readString(key: string): string | null {

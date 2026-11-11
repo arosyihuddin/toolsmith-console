@@ -1,4 +1,4 @@
-# OMP Control API contract (draft v1)
+# Toolsmith Console API contract (draft v1)
 
 This contract describes the control-plane API shared by the Bun self-hosted server and the Cloudflare Workers deployment. Registry CRUD, health checks, first-admin setup, login/logout, and session authentication are implemented. The browser stores its active instance locally, and the runtime proxy uses an explicit route/method allowlist. Cloudflare mode stores registry and authentication data in D1; self-hosted mode uses local SQLite.
 
@@ -89,4 +89,4 @@ Implemented as an explicit allowlist for supported REST endpoints and SSE forwar
 3. Add authenticated health checks and safe per-instance API routing.
 4. Introduce active-instance state in the UI.
 5. Migrate dashboard API calls to the control-plane routes.
-6. Only then remove the legacy embedded dashboard from omp-mcp.
+6. Only then remove the legacy embedded dashboard from the Toolsmith runtime.

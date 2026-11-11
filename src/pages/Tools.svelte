@@ -211,10 +211,10 @@
       void tools.load();
       void loadRootConfig();
     };
-    window.addEventListener("omp-control:instance-change", onInstanceChange);
+    window.addEventListener("toolsmith-console:instance-change", onInstanceChange);
     return () =>
       window.removeEventListener(
-        "omp-control:instance-change",
+        "toolsmith-console:instance-change",
         onInstanceChange,
       );
   });
@@ -521,7 +521,7 @@
               class="text-sm text-warning"
               role="status"
             >
-              Atur <code>TOOLSMITH_SUDO_ENCRYPTION_KEY</code> (atau OMP_SUDO_ENCRYPTION_KEY lama) di environment instance Toolsmith
+              Atur <code>TOOLSMITH_SUDO_ENCRYPTION_KEY</code> di environment instance Toolsmith
               (minimal 32 karakter), lalu restart instance agar password dapat disimpan
               terenkripsi.
             </p>{/if}

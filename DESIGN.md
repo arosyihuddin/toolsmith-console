@@ -1,8 +1,9 @@
-# OMP Control — Design System
+# Toolsmith Console — Design System
 
-This document defines the visual language for OMP Control. It is the source of truth for UI styling decisions and should be consulted before introducing new colors, surfaces, cards, controls, or interaction patterns.
+This document defines the visual language for Toolsmith Console. It is the source of truth for UI styling decisions and should be consulted before introducing new colors, surfaces, cards, controls, or interaction patterns.
 
-The direction is **quiet, precise, and utilitarian**: a restrained monochrome interface inspired by the visual principles of Orca, adapted to OMP Control rather than copied component-for-component. Preserve the product's existing information architecture and behavior unless a change is explicitly requested.
+The direction is **quiet, precise, and utilitarian**: a restrained monochrome interface inspired by the visual principles of Orca, adapted to Toolsmith Console rather than copied component-for-component. Preserve the product's existing information architecture and behavior unless a change is explicitly requested.
+
 
 ## Design principles
 
@@ -134,4 +135,4 @@ Use the exact token utilities supported by the current Tailwind configuration; t
 
 ## Reference
 
-The visual direction is informed by the design principles of [Orca](https://github.com/stablyai/orca). This guide defines OMP Control's own tokens and implementation conventions; it does not require copying Orca's assets, exact layouts, or product-specific UI.
+The visual direction is informed by the design principles of [Orca](https://github.com/stablyai/orca). This guide defines Toolsmith Console's own tokens and implementation conventions; it does not require copying Orca's assets, exact layouts, or product-specific UI.

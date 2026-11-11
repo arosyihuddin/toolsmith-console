@@ -16,7 +16,7 @@ The development server uses port 5173 by default. The UI, control API, runtime p
 - Bun/self-hosted: standalone SvelteKit server, local SQLite registry/auth database, and local cloudflared controls. Run bun run build and bun run start.
 - Cloudflare Workers: static frontend plus the control API in cloudflare/worker.ts; registry and auth data use Cloudflare D1.
 
-The existing Cloudflare D1 database is still named omp-control in the deployment configuration. This resource identifier is intentionally unchanged during the local branding pass; do not create or switch to a replacement database as part of a source rebrand.
+Cloudflare resources use the Toolsmith Console name. When moving an existing D1 database to the new resource name, export and verify its data before switching the Worker binding; keep the previous database as a rollback backup until production verification is complete.
 
 ## Security and API contract
 

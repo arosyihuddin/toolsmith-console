@@ -1,7 +1,7 @@
 import adapterBun from '@eslym/sveltekit-adapter-bun';
 import adapterStatic from '@sveltejs/adapter-static';
 
-const cloudflare = process.env.OMP_CONTROL_TARGET === 'cloudflare';
+const cloudflare = process.env.TOOLSMITH_CONSOLE_TARGET === 'cloudflare';
 
 export default {
   kit: {

@@ -2,7 +2,7 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig, type Plugin } from 'vite';
 
 const bunPlatformUpgradeFix: Plugin = {
-  name: 'omp-control-bun-platform-upgrade-fix',
+  name: 'toolsmith-console-bun-platform-upgrade-fix',
   apply: 'serve',
   enforce: 'post',
   transform(code, id, options) {

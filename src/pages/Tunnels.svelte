@@ -104,19 +104,19 @@
         if (current !== generation) return;
         cloudflared = null;
         loading = false;
-        error = 'Toolsmith API unavailable. Check the selected instance credential and TOOLSMITH_API_TOKEN (or legacy OMP_API_TOKEN) on the Toolsmith host.';
+        error = 'Toolsmith API unavailable. Check the selected instance credential and TOOLSMITH_API_TOKEN on the Toolsmith host.';
       } finally {
         if (current === generation) checkingCloudflared = false;
       }
     };
 
     const onInstanceChange = () => { void loadInstance(); };
-    window.addEventListener('omp-control:instance-change', onInstanceChange);
+    window.addEventListener('toolsmith-console:instance-change', onInstanceChange);
     void loadInstance();
     return () => {
       generation++;
       events?.close();
-      window.removeEventListener('omp-control:instance-change', onInstanceChange);
+      window.removeEventListener('toolsmith-console:instance-change', onInstanceChange);
     };
   });
 </script>

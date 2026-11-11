@@ -153,7 +153,7 @@
       cursorStyle: 'bar',
       // Bundle the font so Nerd Font glyphs work even when the device has no system Nerd Font.
       fontFamily:
-        '"OMP Nerd Font", "JetBrainsMono Nerd Font", "Symbols Nerd Font Mono", "FiraCode Nerd Font", "Hack Nerd Font", "MesloLGS NF", "SFMono-Regular", Menlo, Monaco, Consolas, monospace',
+        '"Toolsmith Nerd Font", "JetBrainsMono Nerd Font", "Symbols Nerd Font Mono", "FiraCode Nerd Font", "Hack Nerd Font", "MesloLGS NF", "SFMono-Regular", Menlo, Monaco, Consolas, monospace',
       fontSize: 13,
       lineHeight: 1.25,
       scrollback: 10000,

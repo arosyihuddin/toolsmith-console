@@ -7,7 +7,7 @@ interface D1StatementLike {
 interface Env {
   DB: { prepare(sql: string): D1StatementLike; batch<T = unknown>(statements: D1StatementLike[]): Promise<Array<{ meta: { changes: number }; results?: T[] }>> };
   ASSETS: { fetch(request: Request): Promise<Response> };
-  OMP_ADMIN_RECOVERY_TOKEN?: string;
+  TOOLSMITH_ADMIN_RECOVERY_TOKEN?: string;
 }
 type InstanceRow = {
   id: string;
@@ -19,7 +19,7 @@ type InstanceRow = {
   created_at: string;
   updated_at: string;
 };
-const COOKIE = "omp_control_session";
+const COOKIE = "toolsmith_console_session";
 const PASSWORD_ITERATIONS = 100000;
 const json = (data: unknown, status = 200, headers: HeadersInit = {}) =>
   Response.json(data, {
@@ -244,8 +244,8 @@ const exact: Record<string, string[]> = {
   "/api/tunnels/status": ["GET"],
   "/api/tunnels/events": ["GET"],
   "/api/models": ["GET"],
-  "/api/omp/config": ["GET", "PUT"],
-  "/api/omp/config/reset": ["POST"],
+  "/api/toolsmith/config": ["GET", "PUT"],
+  "/api/toolsmith/config/reset": ["POST"],
   "/api/terminals": ["GET", "POST"],
   "/api/tools": ["GET"],
   "/api/root-commands": ["GET", "PUT"],
@@ -431,7 +431,7 @@ async function handle(req: Request, env: Env): Promise<Response> {
   if (url.pathname === "/healthz")
     return json({
       status: "ok",
-      service: "omp-control",
+      service: "toolsmith-console",
       runtime: "cloudflare-workers",
     });
   if (!url.pathname.startsWith("/control/v1/")) return env.ASSETS.fetch(req);
@@ -526,7 +526,7 @@ async function handle(req: Request, env: Env): Promise<Response> {
       });
     }
     if (path === "/control/v1/auth/recovery/verify" && req.method === "POST") {
-      const configured = env.OMP_ADMIN_RECOVERY_TOKEN ?? "";
+      const configured = env.TOOLSMITH_ADMIN_RECOVERY_TOKEN ?? "";
       if (configured.length < 32) return fail("RECOVERY_UNAVAILABLE", "Pemulihan password belum dikonfigurasi dengan aman di server.", 503);
       const b = await body(req), supplied = typeof b.token === "string" ? b.token : "";
       const ip = req.headers.get("cf-connecting-ip") ?? "unknown", ipHash = await hash(ip), timestamp = Date.now();

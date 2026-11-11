@@ -4,7 +4,7 @@
 @tailwind utilities;
 
 @font-face {
-  font-family: 'OMP Nerd Font';
+  font-family: 'Toolsmith Nerd Font';
   src: url('/fonts/DroidSansMonoNerdFont.otf') format('opentype');
   font-style: normal;
   font-weight: 400;

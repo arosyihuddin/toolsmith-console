@@ -1,4 +1,4 @@
-# Contributing to OMP Control
+# Contributing to Toolsmith Console
 
 ## Before changing code
 
@@ -47,7 +47,7 @@ git diff --check
 - Validate input at the server boundary and return consistent JSON errors.
 - Never accept arbitrary upstream URLs from the browser or expose instance credentials.
 - Keep secrets out of source control, client state, and logs.
-- Runtime tool catalog, exposure, and effective permission enforcement belong to OMP-MCP. Do not create a competing tool catalog or treat UI state as a security boundary.
+- Runtime tool catalog, exposure, and effective permission enforcement belong to Toolsmith. Do not create a competing tool catalog or treat UI state as a security boundary.
 - Preserve SSE streaming and WebSocket behavior when modifying the proxy.
 
 ## Documentation

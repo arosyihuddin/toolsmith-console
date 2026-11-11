@@ -18,7 +18,7 @@ export async function request<T>(url: string, init: RequestInit = {}): Promise<T
       ? data.error
       : data.error?.message ?? `Request failed (${response.status})`;
     if (response.status === 401 && url.startsWith("/control/v1/") && !url.includes("/runtime/")) {
-      window.dispatchEvent(new CustomEvent("omp-control:auth-required"));
+      window.dispatchEvent(new CustomEvent("toolsmith-console:auth-required"));
     }
     throw new ApiError(message, response.status);
   }
