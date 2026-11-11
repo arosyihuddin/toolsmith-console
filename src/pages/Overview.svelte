@@ -15,11 +15,18 @@
   const memoryUsedGiB = $derived(system.memory?.used_bytes == null ? null : system.memory.used_bytes / 1024 ** 3);
   const memoryTotalGiB = $derived(system.memory?.total_bytes == null ? null : system.memory.total_bytes / 1024 ** 3);
   const gpu = $derived(system.gpu?.devices?.[0]);
+  const formatUptime = (seconds?: number) => {
+    if (seconds == null || !Number.isFinite(seconds) || seconds < 0) return '—';
+    const days = Math.floor(seconds / 86400);
+    const hours = Math.floor((seconds % 86400) / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    return [days ? `${days}d` : '', `${hours}h`, `${minutes}m`].filter(Boolean).join(' ');
+  };
   let resourceHistory = $state<ResourceSample[]>([]);
   onMount(() => {
     const onInstanceChange = () => { resourceHistory = []; };
-    window.addEventListener('omp-control:instance-change', onInstanceChange);
-    return () => window.removeEventListener('omp-control:instance-change', onInstanceChange);
+    window.addEventListener('toolsmith-console:instance-change', onInstanceChange);
+    return () => window.removeEventListener('toolsmith-console:instance-change', onInstanceChange);
   });
   $effect(() => {
     const sample: ResourceSample = {
@@ -62,10 +69,11 @@
       </div>
     </section>
 
-    <section aria-label="Key metrics" class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+    <section aria-label="Key metrics" class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-5">
       <a href="/tools" class="group rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-accent"><StatCard label="Registered tools" value={dashboard.toolCount} hint="Available system capabilities" /></a>
       <StatCard label="Tool calls today" value={dashboard.toolCallsToday.toLocaleString()} hint="Since 00:00 WIB" />
       <a href="/approvals" class="group rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-accent"><StatCard label="Pending approvals" value={approvals.pending.length} hint={approvals.pending.length ? 'Action required · review requests' : 'No requests waiting'} /></a>
+      <StatCard label="Host uptime" value={formatUptime(system.uptime_seconds)} hint="Time since last host boot" />
       <StatCard label="Server status" hint="Remote telemetry connection">
         {#snippet valueSlot()}
           <span class="flex items-center gap-2 text-xl sm:text-2xl"><StatusDot tone={dashboard.connected ? 'success' : 'muted'} pulse={dashboard.connected} />{dashboard.connected ? 'Connected' : 'Offline'}</span>

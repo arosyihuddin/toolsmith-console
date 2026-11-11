@@ -101,6 +101,7 @@ export interface SystemTelemetry {
   memory?: { used_bytes?: number; total_bytes?: number; usage_percent?: number };
   disk?: { path?: string; used_bytes?: number; total_bytes?: number; usage_percent?: number };
   gpu?: { devices?: GpuDevice[] };
+  uptime_seconds?: number;
   runtime?: Record<string, string | null>;
   network?: {
     interfaces?: { name: string; up: boolean; address_count: number; families?: string[] }[];
