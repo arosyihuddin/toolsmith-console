@@ -170,6 +170,7 @@ function runtimeRouteAllowed(path: string, method: string): boolean {
     "/api/tunnels/events": ["GET"],
     "/api/terminals": ["GET", "POST"],
     "/api/tools": ["GET"],
+    "/api/upstream": ["GET", "POST"],
     "/api/logs": ["GET"],
     "/api/approvals": ["GET"],
     "/api/approvals/clear": ["POST"],
@@ -201,6 +202,10 @@ function runtimeRouteAllowed(path: string, method: string): boolean {
   if (new RegExp("^/api/tunnels/[^/]+/stop$").test(path)) return method === "POST" || method === "DELETE";
   if (new RegExp("^/api/tools/sections/(read_only|edit_delete|other)/permission$").test(path)) return method === "PATCH";
   if (new RegExp("^/api/tools/[^/]+$").test(path)) return method === "PATCH";
+  if (new RegExp("^/api/upstream/[^/]+$").test(path)) return method === "GET" || method === "PATCH" || method === "DELETE";
+  if (new RegExp("^/api/upstream/[^/]+/test$").test(path)) return method === "POST";
+  if (new RegExp("^/api/upstream/[^/]+/reconnect$").test(path)) return method === "POST";
+  if (new RegExp("^/api/upstream/[^/]+/tools/.+$").test(path)) return method === "PATCH";
   if (new RegExp("^/api/approvals/[^/]+/(approve|deny)$").test(path)) return method === "POST";
   return false;
 }

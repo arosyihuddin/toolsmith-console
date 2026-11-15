@@ -22,6 +22,7 @@
   import EditorView from './features/workspace/EditorView.svelte';
   import TerminalPage from './pages/Terminal.svelte';
   import Tools from './pages/Tools.svelte';
+  import Upstream from './pages/Upstream.svelte';
   import Approvals from './pages/Approvals.svelte';
   import GlobalApprovalNotifications from './features/approvals/GlobalApprovalNotifications.svelte';
   import ToastViewport from '$lib/components/ui/ToastViewport.svelte';
@@ -166,6 +167,8 @@
       <Overview />
     {:else if router.current === 'tools'}
       <Tools />
+    {:else if router.current === 'upstream'}
+      <Upstream />
     {:else if router.current === 'approvals'}
       <Approvals />
   {:else if router.current === 'terminal'}

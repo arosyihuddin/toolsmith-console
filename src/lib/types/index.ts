@@ -35,6 +35,89 @@ export interface Tool {
   inputFields: ToolInputField[];
 }
 
+export type UpstreamTransport = 'stdio' | 'streamable-http';
+export type UpstreamAuthType = 'none' | 'bearer' | 'api-key';
+export type UpstreamServerStatus = 'connected' | 'down' | 'disabled' | 'error';
+
+/** Server upstream seperti yang dikembalikan API (secret tidak pernah disertakan). */
+export interface UpstreamServer {
+  id: string;
+  name: string;
+  transport: UpstreamTransport;
+  command?: string;
+  args: string[];
+  cwd?: string;
+  url?: string;
+  authType: UpstreamAuthType;
+  hasAuthSecret: boolean;
+  hasEnvSecrets: boolean;
+  readRoots: string[];
+  writeRoots: string[];
+  timeoutMs: number;
+  enabled: boolean;
+  status: UpstreamServerStatus;
+  lastError?: string | null;
+  toolCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** Tool upstream (cache `tools/list` + exposure/permission efektif). */
+export interface UpstreamTool {
+  name: string;
+  exposedName: string;
+  description?: string;
+  inputSchema: Record<string, unknown>;
+  annotations?: {
+    title?: string;
+    readOnlyHint?: boolean;
+    destructiveHint?: boolean;
+    idempotentHint?: boolean;
+    openWorldHint?: boolean;
+  };
+  exposed: boolean;
+  section: ToolPermissionSection;
+  permission: ToolPermission;
+  permissionOverride: ToolPermission | null;
+  sectionPermission: ToolPermission;
+  customRule: ToolCustomRule;
+  sectionCustomRule: ToolCustomRule;
+}
+
+/** Payload tambah/ubah server. `id` opsional saat tambah — backend
+ * membuatnya otomatis dari nama. `authSecret` hanya dikirim bila diisi
+ * (edit: kosong = dipertahankan). */
+export interface UpstreamServerInput {
+  id?: string;
+  name: string;
+  transport: UpstreamTransport;
+  command?: string;
+  args?: string[];
+  env?: Record<string, string>;
+  cwd?: string;
+  url?: string;
+  authType?: UpstreamAuthType;
+  authSecret?: string | null;
+  headers?: Record<string, string>;
+  readRoots?: string[];
+  writeRoots?: string[];
+  timeoutMs?: number;
+  enabled?: boolean;
+}
+
+/** Satu tool seperti yang dilaporkan upstream saat test connection (tanpa exposure/permission). */
+export interface UpstreamTestTool {
+  name: string;
+  description?: string;
+  inputSchema: Record<string, unknown>;
+  annotations?: UpstreamTool['annotations'];
+}
+
+export interface UpstreamTestResult {
+  serverInfo: { name: string; version?: string };
+  tools: UpstreamTestTool[];
+}
+
 type ApprovalStatus = 'pending' | 'approved' | 'denied' | 'expired' | 'cancelled';
 export type ApprovalDecision = 'approve' | 'deny';
 

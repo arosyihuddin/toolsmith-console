@@ -13,6 +13,10 @@ import type {
   Tool,
   ToolCustomRule,
   ToolCallLog,
+  UpstreamServer,
+  UpstreamServerInput,
+  UpstreamTestResult,
+  UpstreamTool,
   WorkspaceItem,
 } from '$lib/types';
 import { postJson, request } from './http';
@@ -93,6 +97,33 @@ export const toolsApi = {
     request<{ tools: Tool[]; sectionPermissions: Record<Tool['section'], Tool['permission']>; sectionCustomRules: Record<Tool['section'], ToolCustomRule> }>(`/api/tools/sections/${section}/permission`, {
       method: 'PATCH', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ permission, ...(customRule ? { customRule } : {}) }),
     }),
+};
+
+export const upstreamApi = {
+  list: async () => (await request<{ servers: UpstreamServer[] }>('/api/upstream')).servers ?? [],
+  get: async (id: string) =>
+    request<{ server: UpstreamServer; tools: UpstreamTool[] }>('/api/upstream/' + enc(id)),
+  create: async (input: UpstreamServerInput) =>
+    (await postJson<{ server: UpstreamServer }>('/api/upstream', input)).server,
+  /** Test connection tanpa menyimpan. `:id` di path diabaikan backend;
+   *  form tambah belum punya id, jadi pakai 'test' sebagai placeholder. */
+  test: (input: UpstreamServerInput) =>
+    postJson<UpstreamTestResult>('/api/upstream/' + enc(input.id ?? 'test') + '/test', input),
+  update: async (id: string, patch: Partial<UpstreamServerInput>) =>
+    (await request<{ server: UpstreamServer }>('/api/upstream/' + enc(id), {
+      method: 'PATCH', headers: { 'content-type': 'application/json' }, body: JSON.stringify(patch),
+    })).server,
+  remove: (id: string) => request<{ deleted: boolean; id: string }>('/api/upstream/' + enc(id), { method: 'DELETE' }),
+  reconnect: async (id: string) =>
+    (await postJson<{ server: UpstreamServer }>('/api/upstream/' + enc(id) + '/reconnect')).server,
+  setToolExposed: async (serverId: string, toolName: string, exposed: boolean) =>
+    (await request<{ tool: UpstreamTool }>(`/api/upstream/${enc(serverId)}/tools/${enc(toolName)}`, {
+      method: 'PATCH', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ exposed }),
+    })).tool,
+  setToolPermission: async (serverId: string, toolName: string, permission: Tool['permission'] | null, customRule?: ToolCustomRule) =>
+    (await request<{ tool: UpstreamTool }>(`/api/upstream/${enc(serverId)}/tools/${enc(toolName)}`, {
+      method: 'PATCH', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ permission, ...(customRule ? { customRule } : {}) }),
+    })).tool,
 };
 
 export interface RootCommandRule { command: string; args: string[]; enabled: boolean; }

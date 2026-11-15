@@ -248,6 +248,7 @@ const exact: Record<string, string[]> = {
   "/api/toolsmith/config/reset": ["POST"],
   "/api/terminals": ["GET", "POST"],
   "/api/tools": ["GET"],
+  "/api/upstream": ["GET", "POST"],
   "/api/root-commands": ["GET", "PUT"],
   "/api/root-commands/password": ["PUT"],
   "/api/logs": ["GET"],
@@ -281,6 +282,11 @@ function allowed(path: string, method: string) {
   if (/^\/api\/tunnels\/[^/]+\/logs$/.test(path)) return method === "GET";
   if (/^\/api\/tunnels\/[^/]+\/stop$/.test(path)) return method === "POST" || method === "DELETE";
   if (/^\/api\/tools\/[^/]+$/.test(path)) return method === "PATCH";
+  if (/^\/api\/upstream\/[^/]+$/.test(path))
+    return method === "GET" || method === "PATCH" || method === "DELETE";
+  if (/^\/api\/upstream\/[^/]+\/test$/.test(path)) return method === "POST";
+  if (/^\/api\/upstream\/[^/]+\/reconnect$/.test(path)) return method === "POST";
+  if (/^\/api\/upstream\/[^/]+\/tools\/.+$/.test(path)) return method === "PATCH";
   if (/^\/api\/approvals\/[^/]+\/(approve|deny)$/.test(path))
     return method === "POST";
   if (path === "/api/sessions") return method === "POST";
